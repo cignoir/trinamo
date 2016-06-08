@@ -9,7 +9,7 @@ Gem::Specification.new do |spec|
   spec.authors       = ["cignoir"]
   spec.email         = ["cignoir@gmail.com"]
 
-  spec.summary       = %q{utilities for aws-dynamodb}
+  spec.summary       = %q{DDL Generator for Hive from YAML}
   spec.description   = %q{}
   spec.homepage      = "https://github.com/cignoir/trinamo"
   spec.license       = "MIT"
