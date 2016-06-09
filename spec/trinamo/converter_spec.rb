@@ -67,7 +67,7 @@ describe 'Trinamo::Converter' do
     end
 
     describe '.generate_ddl_ddb' do
-      subject { Trinamo::Converter.generate_ddl_ddb('ddl.yml') }
+      subject { Trinamo::Converter.load('ddl.yml', :dynamodb).convert }
 
       let(:expected) do
         <<-EXPECTED.unindent
@@ -102,7 +102,7 @@ describe 'Trinamo::Converter' do
     end
 
     describe '.generate_ddl_s3' do
-      subject { Trinamo::Converter.generate_ddl_s3('ddl.yml') }
+      subject { Trinamo::Converter.load('ddl.yml', :s3).convert }
 
       let(:expected) do
         <<-EXPECTED.unindent
@@ -119,7 +119,7 @@ describe 'Trinamo::Converter' do
     end
 
     describe '.generate_ddl_hdfs' do
-      subject { Trinamo::Converter.generate_ddl_hdfs('ddl.yml') }
+      subject { Trinamo::Converter.load('ddl.yml', :hdfs).convert }
 
       let(:expected) do
         <<-EXPECTED.unindent
