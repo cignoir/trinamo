@@ -35,6 +35,7 @@ Trinamo::Converter.generate_template(out_file_path = 'ddl.yml')
 
 * OUTPUT:
 ```yaml
+dynamo_read_percent: 0.75
 tables:
   - name: comments
     s3_location: s3://path/to/s3/table/location
@@ -72,7 +73,7 @@ Trinamo::Converter.generate_ddl_ddb('ddl.yml')
 
 * OUTPUT:
 ```hql
-SET dynamodb.throughput.read.percent = 0.5;
+SET dynamodb.throughput.read.percent = 0.75;
 SET hive.exec.compress.output=true;
 SET io.seqfile.compression.type=BLOCK;
 SET mapred.output.compression.codec = com.hadoop.compression.lzo.LzoCodec;
