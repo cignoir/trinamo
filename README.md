@@ -68,7 +68,7 @@ tables:
 
 * RUN:
 ```ruby
-Trinamo::Converter.generate_ddl_ddb('ddl.yml')
+Trinamo::Converter.load('ddl.yml', :dynamodb).convert
 ```
 
 * OUTPUT:
@@ -102,7 +102,7 @@ TBLPROPERTIES (
 ### Create a mapper for S3
 * RUN:
 ```ruby
-Trinamo::Converter.generate_ddl_s3('ddl.yml')
+Trinamo::Converter.load('ddl.yml', :s3).convert
 ```
 
 * OUTPUT:
@@ -118,7 +118,7 @@ LOCATION 's3://path/to/s3/table/location';
 ### Create a mapper for HDFS local
 * RUN:
 ```ruby
-Trinamo::Converter.generate_ddl_hdfs('ddl.yml')
+Trinamo::Converter.load('ddl.yml', :hdfs).convert
 ```
 
 * OUTPUT:
