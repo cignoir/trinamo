@@ -8,6 +8,7 @@ describe 'Trinamo::Converter' do
 
   let!(:template) do
     <<-EXPECTED.unindent
+      dynamo_read_percent: 0.75
       tables:
         - name: comments
           s3_location: s3://path/to/s3/table/location
@@ -66,7 +67,7 @@ describe 'Trinamo::Converter' do
     end
 
     describe '.generate_ddl_ddb' do
-      subject { Trinamo::Converter.generate_ddl_ddb('ddl.yml', 0.75) }
+      subject { Trinamo::Converter.generate_ddl_ddb('ddl.yml') }
 
       let(:expected) do
         <<-EXPECTED.unindent
@@ -105,12 +106,12 @@ describe 'Trinamo::Converter' do
 
       let(:expected) do
         <<-EXPECTED.unindent
--- comments_s3
-CREATE EXTERNAL TABLE comments_s3 (
-  user_id BIGINT,comment_id BIGINT,title STRING,content STRING,rate DOUBLE
-) PARTITIONED BY (date STRING)
-ROW FORMAT DELIMITED FIELDS TERMINATED BY '\\t' LINES TERMINATED BY '\\n'
-LOCATION 's3://path/to/s3/table/location';
+          -- comments_s3
+          CREATE EXTERNAL TABLE comments_s3 (
+            user_id BIGINT,comment_id BIGINT,title STRING,content STRING,rate DOUBLE
+          ) PARTITIONED BY (date STRING)
+          ROW FORMAT DELIMITED FIELDS TERMINATED BY '\\t' LINES TERMINATED BY '\\n'
+          LOCATION 's3://path/to/s3/table/location';
         EXPECTED
       end
 

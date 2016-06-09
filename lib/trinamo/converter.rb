@@ -7,6 +7,7 @@ module Trinamo
     class << self
       def generate_template(out_file_path = nil)
         template = <<-TEMPLATE.unindent
+          dynamo_read_percent: 0.75
           tables:
             - name: comments
               s3_location: s3://path/to/s3/table/location
@@ -39,7 +40,10 @@ module Trinamo
         template
       end
 
-      def generate_ddl_ddb(ddl_yml_path, read_percent = 0.5)
+      def generate_ddl_ddb(ddl_yml_path)
+        yaml = YAML.load_file(ddl_yml_path).deep_symbolize_keys
+        read_percent = yaml[:dynamo_read_percent] ? yaml[:dynamo_read_percent] : 0.5
+
         ddl_header = <<-DDL.unindent
           SET dynamodb.throughput.read.percent = #{read_percent};
           SET hive.exec.compress.output=true;
@@ -47,7 +51,7 @@ module Trinamo
           SET mapred.output.compression.codec = com.hadoop.compression.lzo.LzoCodec;
         DDL
 
-        ddl_body = YAML.load_file(ddl_yml_path).deep_symbolize_keys[:tables].map do |h|
+        ddl_body = yaml[:tables].map do |h|
           fields = ([h[:hash_key]] + [h[:range_key]] + [h[:attributes]]).flatten.compact
           <<-DDL.unindent
             -- #{h[:name]}_ddb
@@ -67,10 +71,7 @@ module Trinamo
 
       def generate_ddl_s3(ddl_yml_path)
         ddl_body = YAML.load_file(ddl_yml_path).deep_symbolize_keys[:tables].map do |h|
-          unless h[:s3_location]
-            STDERR.puts "[ERROR] The location of #{h[:name]}_s3 is not found"
-            nil
-          else
+          if h[:s3_location]
             fields = ([h[:hash_key]] + [h[:range_key]] + [h[:attributes]]).flatten.compact
             partitioned_by = h[:s3_partition] ? "PARTITIONED BY (#{h[:s3_partition].map { |attr| "#{attr[:name]} #{attr[:type].upcase}" }.join(',')})" : ''
             <<-DDL.unindent
@@ -81,6 +82,9 @@ module Trinamo
               ROW FORMAT DELIMITED FIELDS TERMINATED BY '\\t' LINES TERMINATED BY '\\n'
               LOCATION '#{h[:s3_location]}';
             DDL
+          else
+            STDERR.puts "[ERROR] The location of #{h[:name]}_s3 is not found"
+            nil
           end
         end
 
