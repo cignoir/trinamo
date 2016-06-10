@@ -12,8 +12,8 @@ module Trinamo
           when :hdfs then HdfsConverter.new(ddl_yaml_path)
           when :s3 then S3Converter.new(ddl_yaml_path)
           when :dynamodb then DynamodbConverter.new(ddl_yaml_path)
-          when :option || :options then  load_options(ddl_yaml_path)
-          else raise "[ERROR] Unknown format: #{format}" unless [:dynamodb, :hdfs, :s3].include(format)
+          when :option then  load_options(ddl_yaml_path)
+          else raise "[ERROR] Unknown format: #{format}"
         end
       end
 

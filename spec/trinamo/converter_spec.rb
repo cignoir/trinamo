@@ -47,6 +47,13 @@ describe 'Trinamo::Converter' do
     EXPECTED
   end
 
+  describe '.load' do
+    context 'when given unknown format' do
+      let(:format) { :unknown }
+      it { expect { Trinamo::Converter.load('dummy', format) }.to raise_error("[ERROR] Unknown format: unknown") }
+    end
+  end
+
   describe '.generate_ddl_template' do
     subject { Trinamo::Converter.generate_ddl_template('out.yml') }
 
