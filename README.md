@@ -1,7 +1,9 @@
 # Trinamo
 
-Trinamo generates DDL for Hive from YAML
-to mount tables of DynamoDB, S3 and local HDFS.
+[![Build Status](https://travis-ci.org/cignoir/trinamo.svg?branch=master)](https://travis-ci.org/cignoir/trinamo)
+[![Coverage Status](https://coveralls.io/repos/github/cignoir/trinamo/badge.svg?branch=master)](https://coveralls.io/github/cignoir/trinamo?branch=master)
+
+Trinamo generates HiveQL using YAML to mount tables of DynamoDB, S3 and local HDFS.
 
 ```
 Notice:
@@ -26,16 +28,15 @@ Or install it yourself as:
 
 ## Usage
 
-### Create a DDL template
-
+## Table Definition
+### Generate a template for DDL
 * RUN:
 ```ruby
-Trinamo::Converter.generate_template(out_file_path = 'ddl.yml')
+Trinamo::Converter.generate_ddl_template(out_file_path = 'ddl.yml')
 ```
 
 * OUTPUT:
 ```yaml
-dynamo_read_percent: 0.75
 tables:
   - name: comments
     s3_location: s3://path/to/s3/table/location
@@ -64,7 +65,44 @@ tables:
         type: string
 ```
 
-### Create a mapper for DynamoDB
+### Generate a template for hive options
+* RUN:
+```ruby
+Trinamo::Converter.generate_options_template(out_file_path = 'ddl.yml')
+```
+
+* OUTPUT:
+```yaml
+options:
+  dynamodb.throughput.read.percent: 0.5
+  hive.exec.compress.output: true
+  io.seqfile.compression.type: BLOCK
+  mapred.output.compression.codec: com.hadoop.compression.lzo.LzoCodec
+
+```
+
+Then, modify table-definitions and hive-settings as you like.
+
+## Create DDLs in HiveQL
+### For Options
+* RUN:
+```ruby
+Trinamo::Converter.load('ddl.yml', :option).convert
+```
+or
+```ruby
+Trinamo::Converter.load_options('options.yml').convert
+```
+
+* OUTPUT:
+```hql
+SET dynamodb.throughput.read.percent = 0.5;
+SET hive.exec.compress.output=true;
+SET io.seqfile.compression.type=BLOCK;
+SET mapred.output.compression.codec = com.hadoop.compression.lzo.LzoCodec;
+```
+
+### For DynamoDB
 
 * RUN:
 ```ruby
@@ -73,11 +111,6 @@ Trinamo::Converter.load('ddl.yml', :dynamodb).convert
 
 * OUTPUT:
 ```hql
-SET dynamodb.throughput.read.percent = 0.75;
-SET hive.exec.compress.output=true;
-SET io.seqfile.compression.type=BLOCK;
-SET mapred.output.compression.codec = com.hadoop.compression.lzo.LzoCodec;
-
 -- comments_ddb
 CREATE EXTERNAL TABLE comments_ddb (
   user_id BIGINT,comment_id BIGINT,title STRING,content STRING,rate DOUBLE
@@ -99,7 +132,7 @@ TBLPROPERTIES (
 );
 ```
 
-### Create a mapper for S3
+### For S3
 * RUN:
 ```ruby
 Trinamo::Converter.load('ddl.yml', :s3).convert
@@ -115,7 +148,7 @@ ROW FORMAT DELIMITED FIELDS TERMINATED BY '\t' LINES TERMINATED BY '\n'
 LOCATION 's3://path/to/s3/table/location';
 ```
 
-### Create a mapper for HDFS local
+### For HDFS
 * RUN:
 ```ruby
 Trinamo::Converter.load('ddl.yml', :hdfs).convert
