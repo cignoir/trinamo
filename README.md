@@ -5,11 +5,6 @@
 
 Trinamo generates HiveQL using YAML to mount tables of DynamoDB, S3 and local HDFS.
 
-```
-Notice:
-This is experimental stuff! Do not use in production.
-```
-
 ## Installation
 
 Add this line to your application's Gemfile:
