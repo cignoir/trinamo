@@ -1,4 +1,5 @@
 require 'unindent'
+require_relative './converter/base_converter'
 require_relative './converter/dynamodb_converter'
 require_relative './converter/hdfs_converter'
 require_relative './converter/s3_converter'
@@ -7,18 +8,15 @@ require_relative './converter/option_converter'
 module Trinamo
   class Converter
     class << self
-      def load(ddl_yaml_path, format)
+      def load(ddl_yaml_path, format = nil, ddl = nil)
         case format
-          when :hdfs then HdfsConverter.new(ddl_yaml_path)
-          when :s3 then S3Converter.new(ddl_yaml_path)
-          when :dynamodb then DynamodbConverter.new(ddl_yaml_path)
-          when :option then  load_options(ddl_yaml_path)
+          when :hdfs then HdfsConverter.new(ddl_yaml_path, ddl)
+          when :s3 then S3Converter.new(ddl_yaml_path, ddl)
+          when :dynamodb then DynamodbConverter.new(ddl_yaml_path, ddl)
+          when :option then OptionConverter.new(ddl_yaml_path, ddl)
+          when nil then BaseConverter.new(ddl_yaml_path, ddl)
           else raise "[ERROR] Unknown format: #{format}"
         end
-      end
-
-      def load_options(options_yaml_path)
-        OptionConverter.new(options_yaml_path)
       end
 
       def generate_ddl_template(out_file_path = nil)
