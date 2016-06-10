@@ -7,7 +7,7 @@ module Trinamo
 
     def initialize(ddl_yaml_path)
       @ddl_yaml_path = ddl_yaml_path
-      @ddl = YAML.load_file(ddl_yaml_path).deep_symbolize_keys
+      @ddl = ddl_yaml_path ? YAML.load_file(ddl_yaml_path).deep_symbolize_keys : nil
     end
   end
 end
