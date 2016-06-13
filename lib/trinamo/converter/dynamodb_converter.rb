@@ -6,8 +6,8 @@ module Trinamo
       ddl_body = @ddl[:tables].map do |h|
         fields = ([h[:hash_key]] + [h[:range_key]] + [h[:attributes]]).flatten.compact
         <<-DDL.unindent
-          -- #{h[:name]}_ddb
-          CREATE EXTERNAL TABLE #{h[:name]}_ddb (
+          -- #{Trinamo::Converter.remove_head_underscore(h[:name])}_ddb
+          CREATE EXTERNAL TABLE #{Trinamo::Converter.remove_head_underscore(h[:name])}_ddb (
             #{fields.map { |attr| "#{attr[:name]} #{attr[:type].upcase}" }.join(',')}
           )
           STORED BY 'org.apache.hadoop.hive.dynamodb.DynamoDBStorageHandler'

@@ -93,4 +93,18 @@ describe 'Trinamo::Converter' do
       File.delete('out.yml') if File.exists?('out.yml')
     end
   end
+
+  describe '.remove_head_underscore' do
+    subject { Trinamo::Converter.remove_head_underscore(raw_table_name) }
+
+    context 'when starts with underscore' do
+      let(:raw_table_name) { '_dynamodb_table_name_' }
+      it { is_expected.to eq 'dynamodb_table_name_' }
+    end
+
+    context 'when not starts with underscore' do
+      let(:raw_table_name) { 'dynamodb_table_name_' }
+      it { is_expected.to eq 'dynamodb_table_name_' }
+    end
+  end
 end

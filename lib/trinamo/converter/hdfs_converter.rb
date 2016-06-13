@@ -6,8 +6,8 @@ module Trinamo
       ddl_body = @ddl[:tables].map do |h|
         fields = ([h[:hash_key]] + [h[:range_key]] + [h[:attributes]]).flatten.compact
         <<-DDL.unindent
-          -- #{h[:name]}_hdfs
-          CREATE TABLE #{h[:name]}_hdfs (
+          -- #{Trinamo::Converter.remove_head_underscore(h[:name])}_hdfs
+          CREATE TABLE #{Trinamo::Converter.remove_head_underscore(h[:name])}_hdfs (
             #{fields.map { |attr| "#{attr[:name]} #{attr[:type].upcase}" }.join(',')}
           );
         DDL

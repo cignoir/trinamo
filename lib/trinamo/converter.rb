@@ -65,6 +65,10 @@ module Trinamo
         File.binwrite(out_file_path, template) if out_file_path
         template
       end
+
+      def remove_head_underscore(raw_table_name)
+        /^_(.+)/ =~ raw_table_name ? $1 : raw_table_name
+      end
     end
   end
 end
