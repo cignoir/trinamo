@@ -15,10 +15,9 @@ describe Trinamo::HdfsConverter do
     end
 
     describe '#convert' do
-      subject { Trinamo::Converter.load('ddl.yml', :hdfs).convert }
-
-      let(:expected) do
-        <<-EXPECTED.unindent
+      shared_examples_for 'converting hdfs' do
+        let(:expected) do
+          <<-EXPECTED.unindent
           -- comments_hdfs
           CREATE TABLE comments_hdfs (
             user_id BIGINT,comment_id BIGINT,title STRING,content STRING,rate DOUBLE
@@ -28,10 +27,21 @@ describe Trinamo::HdfsConverter do
           CREATE TABLE authors_hdfs (
             author_id BIGINT,name STRING
           );
-        EXPECTED
+          EXPECTED
+        end
+
+        it { is_expected.to eq expected }
       end
 
-      it { is_expected.to eq expected }
+      context 'when given format on loading' do
+        subject { Trinamo::Converter.load('ddl.yml', :hdfs).convert }
+        it_behaves_like 'converting hdfs'
+      end
+
+      context 'when given format on converting' do
+        subject { Trinamo::Converter.load('ddl.yml').convert(:hdfs) }
+        it_behaves_like 'converting hdfs'
+      end
     end
   end
 end

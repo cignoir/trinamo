@@ -15,20 +15,30 @@ describe Trinamo::S3Converter do
     end
 
     describe '#convert' do
-      subject { Trinamo::Converter.load('ddl.yml', :s3).convert }
-
-      let(:expected) do
-        <<-EXPECTED.unindent
+      shared_examples_for 'converting s3' do
+        let(:expected) do
+          <<-EXPECTED.unindent
           -- comments_s3
           CREATE EXTERNAL TABLE comments_s3 (
             user_id BIGINT,comment_id BIGINT,title STRING,content STRING,rate DOUBLE
           ) PARTITIONED BY (date STRING)
           ROW FORMAT DELIMITED FIELDS TERMINATED BY '\\t' LINES TERMINATED BY '\\n'
           LOCATION 's3://path/to/s3/table/location';
-        EXPECTED
+          EXPECTED
+        end
+
+        it { is_expected.to eq expected }
       end
 
-      it { is_expected.to eq expected }
+      context 'when given format on loading' do
+        subject { Trinamo::Converter.load('ddl.yml', :s3).convert }
+        it_behaves_like 'converting s3'
+      end
+
+      context 'when given format on converting' do
+        subject { Trinamo::Converter.load('ddl.yml').convert(:s3) }
+        it_behaves_like 'converting s3'
+      end
     end
   end
 end

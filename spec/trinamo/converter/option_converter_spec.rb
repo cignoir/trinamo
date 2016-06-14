@@ -33,6 +33,11 @@ describe Trinamo::OptionConverter do
         subject { Trinamo::Converter.load('options.yml', :option).convert }
         it_behaves_like 'loading options'
       end
+
+      context 'when given format on converting' do
+        subject { Trinamo::Converter.load('options.yml').convert(:option) }
+        it_behaves_like 'loading options'
+      end
     end
   end
 end

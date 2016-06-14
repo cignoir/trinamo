@@ -15,10 +15,9 @@ describe Trinamo::DynamodbConverter do
     end
 
     describe '#convert' do
-      subject { Trinamo::Converter.load('ddl.yml', :dynamodb).convert }
-
-      let(:expected) do
-        <<-EXPECTED.unindent
+      shared_examples_for 'converting dynamodb' do
+        let(:expected) do
+          <<-EXPECTED.unindent
           -- comments_ddb
           CREATE EXTERNAL TABLE comments_ddb (
             user_id BIGINT,comment_id BIGINT,title STRING,content STRING,rate DOUBLE
@@ -38,10 +37,21 @@ describe Trinamo::DynamodbConverter do
             'dynamodb.table.name' = 'authors',
             'dynamodb.column.mapping' = 'author_id:author_id,name:name'
           );
-        EXPECTED
+          EXPECTED
+        end
+
+        it { is_expected.to eq expected }
       end
 
-      it { is_expected.to eq expected }
+      context 'when given format on loading' do
+        subject { Trinamo::Converter.load('ddl.yml', :dynamodb).convert }
+        it_behaves_like 'converting dynamodb'
+      end
+
+      context 'when given format on converting' do
+        subject { Trinamo::Converter.load('ddl.yml').convert(:dynamodb) }
+        it_behaves_like 'converting dynamodb'
+      end
     end
   end
 end
