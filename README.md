@@ -82,11 +82,7 @@ Then, modify table-definitions and hive-settings as you like.
 ### For Options
 * RUN:
 ```ruby
-Trinamo::Converter.load('ddl.yml', :option).convert
-```
-or
-```ruby
-Trinamo::Converter.load_options('options.yml').convert
+Trinamo::Converter.load('ddl.yml').convert(:option)
 ```
 
 * OUTPUT:
@@ -101,7 +97,7 @@ SET mapred.output.compression.codec = com.hadoop.compression.lzo.LzoCodec;
 
 * RUN:
 ```ruby
-Trinamo::Converter.load('ddl.yml', :dynamodb).convert
+Trinamo::Converter.load('ddl.yml').convert(:dynamodb)
 ```
 
 * OUTPUT:
@@ -130,7 +126,7 @@ TBLPROPERTIES (
 ### For S3
 * RUN:
 ```ruby
-Trinamo::Converter.load('ddl.yml', :s3).convert
+Trinamo::Converter.load('ddl.yml').convert(:s3)
 ```
 
 * OUTPUT:
@@ -146,7 +142,7 @@ LOCATION 's3://path/to/s3/table/location';
 ### For HDFS
 * RUN:
 ```ruby
-Trinamo::Converter.load('ddl.yml', :hdfs).convert
+Trinamo::Converter.load('ddl.yml').convert(:hdfs)
 ```
 
 * OUTPUT:
